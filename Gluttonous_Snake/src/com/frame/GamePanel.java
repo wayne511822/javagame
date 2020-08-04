@@ -169,10 +169,10 @@ public class GamePanel extends JPanel implements Runnable {
 					break;
 				case KeyEvent.VK_ENTER:
 					if (isCrushed()) { // 如果遊戲結束, 重置數據並重新開始遊戲
-						snake.setDirection(Snake.DIRECTION_RIGHT);
-						snake.setSpeed(Snake.SPEED_3);
-						snake.setBody(new LinkedList<Node>());
-
+//						snake.setDirection(Snake.DIRECTION_RIGHT);
+//						snake.setSpeed(Snake.SPEED_3);
+//						snake.setBody(new LinkedList<Node>());
+						snake = new Snake();
 						isFirstRun = true;
 						isStarted = false;
 						isPaused = false;
@@ -283,9 +283,9 @@ public class GamePanel extends JPanel implements Runnable {
 	public boolean isCrushed() {
 		// 判斷是否碰到邊框
 		boolean isCrushByBorder = snake.getHead().getX() >= getWidth() / 2 + HALF_SIDE
-				|| snake.getHead().getX() < getWidth() / 2 - HALF_SIDE
-				|| snake.getHead().getY() >= getHeight() / 2 + HALF_SIDE
-				|| snake.getHead().getY() < getHeight() / 2 - HALF_SIDE;
+							|| snake.getHead().getX() < getWidth() / 2 - HALF_SIDE
+							|| snake.getHead().getY() >= getHeight() / 2 + HALF_SIDE
+							|| snake.getHead().getY() < getHeight() / 2 - HALF_SIDE;
 
 		if (isCrushByBorder) {
 			information = 1;
