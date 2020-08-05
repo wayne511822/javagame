@@ -1,9 +1,8 @@
 package com.objects;
 
 import com.behavior.Behavior;
-import com.behavior.Tempo;
 
-public class Creation implements Runnable, Behavior {
+public class Creation implements Behavior {
 
 	/**
 	 * 物件所在的X座標
@@ -54,38 +53,30 @@ public class Creation implements Runnable, Behavior {
 	 */
 	protected int direction = DIRECTION_DOWN;
 	/**
-	 * 節拍器對象
-	 */
-	private Tempo tempo;
-	/**
 	 * 用來判斷物件是否處於某個動作指令中 若動作未完成,則無法執行其他動作
 	 */
 	protected boolean canSetStatue;
 	/**
 	 * 使否可向上移動
 	 */
-	private boolean canUp = true;
+	public boolean canUp = true;
 	/**
 	 * 使否可向下移動
 	 */
-	private boolean canDown = true;
+	public boolean canDown = true;
 	/**
 	 * 使否可向左移動
 	 */
-	private boolean canLeft = true;
+	public boolean canLeft = true;
 	/**
 	 * 使否可向右移動
 	 */
-	private boolean canRight = true;
+	public boolean canRight = true;
 
 
 	public Creation() {
 		super();
 
-	}
-
-	public Creation(Tempo tempo) {
-		this.tempo = tempo;
 	}
 
 	public Creation(int x, int y) {
@@ -94,14 +85,12 @@ public class Creation implements Runnable, Behavior {
 		this.y = y;
 	}
 	
-	
-	public Creation(int x, int y, int col, int row, Tempo tempo) {
+	public Creation(int x, int y, int col, int row) {
 		super();
 		this.x = x;
 		this.y = y;
 		this.col = col;
 		this.row = row;
-		this.tempo = tempo;
 	}
 
 	public int getX() {
@@ -152,13 +141,6 @@ public class Creation implements Runnable, Behavior {
 		this.canLeft = canLeft;
 		this.canRight = canRight;
 	}
-	public Tempo getTempo() {
-		return tempo;
-	}
-
-	public void setTempo(Tempo tempo) {
-		this.tempo = tempo;
-	}
 
 	public int getStatus() {
 		return status;
@@ -171,6 +153,24 @@ public class Creation implements Runnable, Behavior {
 	}
 
 	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + (canDown ? 1231 : 1237);
+		result = prime * result + (canLeft ? 1231 : 1237);
+		result = prime * result + (canRight ? 1231 : 1237);
+		result = prime * result + (canSetStatue ? 1231 : 1237);
+		result = prime * result + (canUp ? 1231 : 1237);
+		result = prime * result + col;
+		result = prime * result + direction;
+		result = prime * result + row;
+		result = prime * result + status;
+		result = prime * result + x;
+		result = prime * result + y;
+		return result;
+	}
+
+	@Override
 	public boolean equals(Object obj) {
 		if (this == obj)
 			return true;
@@ -179,6 +179,24 @@ public class Creation implements Runnable, Behavior {
 		if (getClass() != obj.getClass())
 			return false;
 		Creation other = (Creation) obj;
+		if (canDown != other.canDown)
+			return false;
+		if (canLeft != other.canLeft)
+			return false;
+		if (canRight != other.canRight)
+			return false;
+		if (canSetStatue != other.canSetStatue)
+			return false;
+		if (canUp != other.canUp)
+			return false;
+		if (col != other.col)
+			return false;
+		if (direction != other.direction)
+			return false;
+		if (row != other.row)
+			return false;
+		if (status != other.status)
+			return false;
 		if (x != other.x)
 			return false;
 		if (y != other.y)
@@ -186,101 +204,4 @@ public class Creation implements Runnable, Behavior {
 		return true;
 	}
 
-	@Override
-	public void run() {
-		while (true) {
-			action();
-		}
-	}
-
-	/**
-	 * 依傳入指令調用相應方法
-	 */
-	protected synchronized void action() {
-		if (tempo.isActionAble()) {
-			switch (status) {
-			case STATUS_MOVE:
-				move(direction);
-				break;
-			default:
-				jump();
-			}
-//			System.out.println(col + " : " + row);
-//			System.out.println(canUp+":"+canDown+":"+canLeft+":"+canRight);
-		}
-
-	}
-
-	/*
-	 * 物件跳躍動作
-	 */
-	public void jump() {
-		canSetStatue = false;
-		try {
-
-			for (int i = 0; i < jumpCoefficient.length; i++) {
-				setY(getY() - jumpCoefficient[i]);
-				setX(getX());
-				Thread.sleep(30);
-			}
-			canSetStatue = true;
-
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-		}
-	}
-
-	/*
-	 * 物件移動動作, 傳入移動方向
-	 */
-	public void move(int direction) {
-		canSetStatue = false;
-		try {
-			switch (direction) {
-			case DIRECTION_UP:
-				if (canUp) {
-					for (int i = 0; i < jumpCoefficient.length; i++) {
-						setY(y - jumpCoefficient[i] - moveCoefficient[i]);
-						Thread.sleep(30);
-					}
-					setRow(row - 1);
-				}
-				break;
-			case DIRECTION_DOWN:
-				if (canDown) {
-					for (int i = 0; i < jumpCoefficient.length; i++) {
-						setY(y - jumpCoefficient[i] + moveCoefficient[i]);
-						Thread.sleep(30);
-					}
-					setRow(row + 1);
-				}
-				break;
-			case DIRECTION_LEFT:
-				if (canLeft) {
-					for (int i = 0; i < jumpCoefficient.length; i++) {
-						setY(y - jumpCoefficient[i]);
-						setX(x - moveCoefficient[i]);
-						Thread.sleep(30);
-					}
-					setCol(col - 1);
-				}
-				break;
-			case DIRECTION_RIGHT:
-				if (canRight) {
-					for (int i = 0; i < jumpCoefficient.length; i++) {
-						setY(y - jumpCoefficient[i]);
-						setX(x + moveCoefficient[i]);
-						Thread.sleep(30);
-					}
-					setCol(col + 1);
-				}
-				break;
-			}
-			canSetStatue = true;
-			setStatus(STATUS_JUMP);
-
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-		}
-	}
 }

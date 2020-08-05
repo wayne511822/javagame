@@ -5,17 +5,18 @@ import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Random;
+import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 import javax.swing.JPanel;
 
 import com.behavior.Tempo;
 import com.objects.Knight;
+import com.objects.Monster;
 import com.objects.MonstorController;
+import com.objects.Controller;
 import com.objects.Creation;
-import com.objects.Skeleton;
 
 public class GamePanel extends JPanel implements Runnable {
 
@@ -60,9 +61,15 @@ public class GamePanel extends JPanel implements Runnable {
 	 */
 	private static Tempo tempo;
 	/**
-	 * 模擬物件
+	 * 控制器對象
 	 */
-	private static Knight knight = new Knight();
+	private static Controller controller = new Controller();
+	/**
+	 * 騎士對象
+	 */
+	//private Creation knight;
+	
+	ReentrantReadWriteLock rwl = new ReentrantReadWriteLock();
 	/**
 	 * 存放敵人的集合
 	 */
@@ -90,12 +97,13 @@ public class GamePanel extends JPanel implements Runnable {
 		addKeyListener(new KeyAdapter() {
 			@Override
 			public void keyReleased(KeyEvent e) {
-				
+				Creation knight = controller.creations.get(0);
 				switch (e.getKeyCode()) {
 				case KeyEvent.VK_ENTER:
 					if (isStart) {
 						new Thread(tempo).start();
-						new Thread(knight).start();
+						new Thread(controller).start();
+						new Thread(mc).start();
 						isStart = false;
 					}
 					break;
@@ -117,6 +125,20 @@ public class GamePanel extends JPanel implements Runnable {
 				case KeyEvent.VK_F1:
 					addMonster();
 					break;
+				case KeyEvent.VK_F2:
+					System.out.println(mc.monsters.size());
+					int count = 0;
+					rwl.readLock().lock();
+					for (int col = 0; col <location.length; col++) {
+						for (int row = 0; row < location[col].length; row++) {
+							if (location[col][row] != null) {
+								count++;
+							}
+						}
+					}	
+					rwl.readLock().unlock();
+					System.out.println(count);
+					break;
 				}
 			}
 
@@ -129,7 +151,11 @@ public class GamePanel extends JPanel implements Runnable {
 	@Override
 	protected void paintComponent(Graphics g) {
 		super.paintComponent(g);
-
+		//取得騎士對象
+		Creation knight = controller.creations.get(0);
+		//取得怪物集合
+		CopyOnWriteArrayList<Monster> monsters = mc.monsters;
+		
 		// 棋盤繪製起點
 		int xBegin = border_Left;
 		int yBegin = border_Top;
@@ -152,6 +178,7 @@ public class GamePanel extends JPanel implements Runnable {
 			/*
 			 * 繪製騎士
 			 */
+			
 			knight.setX(xBegin + PER_UNIT_SIZE * 5);
 			knight.setY(yBegin + PER_UNIT_SIZE * 5);
 			g.setColor(Color.GREEN);
@@ -166,11 +193,10 @@ public class GamePanel extends JPanel implements Runnable {
 			/*
 			 * 繪製敵人
 			 */
-//			g.setColor(Color.RED);
-//			for (int i = 0; i < monsters.size(); i++) {
-//				Skeleton s = monsters.get(i);
-//				g.fillRect(s.getX(), s.getY(), PER_UNIT_SIZE, PER_UNIT_SIZE);
-//			}
+			g.setColor(Color.RED);
+			for (Monster m : monsters) {
+				g.fillRect(m.getX(), m.getY(), PER_UNIT_SIZE, PER_UNIT_SIZE);
+			}
 
 			/*
 			 * 顯示節拍
@@ -195,10 +221,11 @@ public class GamePanel extends JPanel implements Runnable {
 		 * 物件對象初始化
 		 */
 		tempo = Tempo.getInstance();
-		knight.setTempo(tempo);
-		knight.setCol(5);
-		knight.setRow(5);
+		controller.setTempo(tempo);
+		mc.setTempo(tempo);
+		Creation knight = new Knight(colToX(5), rowToY(5), 5, 5);
 		location[5][5] = knight;
+		controller.addCreation(knight);
 	}
 
 	/**
@@ -208,6 +235,7 @@ public class GamePanel extends JPanel implements Runnable {
 		int xKnight;
 		int yKnight;
 		
+		rwl.writeLock().lock();
 		for (int col = 0; col <location.length; col++) {
 			for (int row = 0; row < location[col].length; row++) {
 				if (location[col][row] != null) {
@@ -215,12 +243,14 @@ public class GamePanel extends JPanel implements Runnable {
 					location[col][row] = null; // 清空原本位置
 					location[c.getCol()][c.getRow()] = c; // 重新添加到新的位置
 					
-					if (c.equals(knight)) {
-						x
+					if (c.equals(controller.creations.get(0))) {
+						mc.setxKinght(colToX(col));
+						mc.setyKinght(rowToY(row));
 					}
 				}
 			}
 		}
+		rwl.writeLock().unlock();
 	}
 
 	/**
@@ -228,6 +258,7 @@ public class GamePanel extends JPanel implements Runnable {
 	 */
 	private void checkAbility() {
 		
+		rwl.readLock().lock();
 		for (int col = 0; col <location.length; col++) {
 			for (int row = 0; row < location[col].length; row++) {
 				boolean canUp = true;
@@ -235,6 +266,7 @@ public class GamePanel extends JPanel implements Runnable {
 				boolean canLeft = true;
 				boolean canRight = true;
 				if (location[col][row] != null) {
+					
 					Creation c = location[col][row]; //取得該位置的物件
 					/*
 					 * 判斷該物件是否在邊界
@@ -254,10 +286,12 @@ public class GamePanel extends JPanel implements Runnable {
 					if (canRight && location[col + 1][row]!= null) canRight = false;
 					
 					c.setAbility(canUp, canDown, canLeft, canRight);
+					
 				}
 				
 			}
 		}
+		rwl.readLock().unlock();
 
 	}
 
@@ -276,46 +310,65 @@ public class GamePanel extends JPanel implements Runnable {
 	}
 
 	/**
-	 * 添加敵人的方法,德人只會在邊界生成
+	 * 添加怪物的方法,怪物只會在邊界生成
 	 */
 	private void addMonster() {
-		
+		Thread t = Thread.currentThread();
+		System.out.println(t.getName());
+		Monster m = null;
 		
 		Random r = new Random();
 		//四個隨機數對應四個邊界
 		int direction = r.nextInt(4);
 		//11個隨機數對應第幾行或列
 		int posntion = r.nextInt(11);
+		
+		rwl.writeLock().lock();
+		
 		switch (direction) {
 		case 0: //上邊界 row = 0
-			s = new Skeleton(colToX(posntion), rowToY(0), posntion, 0, tempo);
-			location[posntion][0] = s;
+			if (location[posntion][0] == null) {
+				m = new Monster(colToX(posntion), rowToY(0), posntion, 0);
+				location[posntion][0] = m;
+			}
 			break;
 		case 1: //下邊界 row = 10
-			s = new Skeleton(colToX(posntion), rowToY(10), posntion, 10, tempo);
-			location[posntion][0] = s;
+			if (location[posntion][0] == null) {
+				m = new Monster(colToX(posntion), rowToY(10), posntion, 10);
+				location[posntion][0] = m;
+			}
 			break;
 		case 2: //左邊界 col = 0
-			s = new Skeleton(colToX(0), rowToY(posntion), 0, posntion, tempo);
-			location[posntion][0] = s;
+			if (location[posntion][0] == null) {
+				m = new Monster(colToX(0), rowToY(posntion), 0, posntion);
+				location[posntion][0] = m;
+			}
 			break;
 		case 4: //右邊界 col = 10
-			s = new Skeleton(colToX(10), rowToY(posntion), 10, posntion, tempo);
-			location[posntion][0] = s;
+			if (location[posntion][0] == null) {
+				m = new Monster(colToX(10), rowToY(posntion), 10, posntion);
+				location[posntion][0] = m;
+			}
 			break;
 		}
-		if (s != null) {
-			new Thread(s).start();
-			monsters.add(s);
+		
+		rwl.writeLock().unlock();
+		
+		if (m != null) { 
+			mc.addMonster(m);
 		}
 	}
 
+	private synchronized void action() {
+		updateLocation();
+		checkAbility();
+		repaint();
+	}
+	
 	@Override
 	public void run() {
 		while (true) {
-			updateLocation();
-			checkAbility();
-			repaint();	
+			action();	
 		}
 	}
 

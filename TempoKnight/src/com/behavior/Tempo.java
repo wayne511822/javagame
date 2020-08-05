@@ -13,7 +13,7 @@ public class Tempo implements Runnable {
 	private static int time = 0;
 	private boolean actionAble = true;
 	private static Tempo tempo = null;
-	public static Color color;
+	public Color color;
 	
 	private Tempo() {
 		
@@ -32,7 +32,7 @@ public class Tempo implements Runnable {
 			actionAble = true;
 			color  = Color.BLACK;
 			//System.out.println("temp---" + actionAble);
-			Thread.sleep(500);
+			Thread.sleep(600);
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
