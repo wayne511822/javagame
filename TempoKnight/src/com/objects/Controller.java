@@ -3,7 +3,7 @@ package com.objects;
 import com.behavior.Behavior;
 import com.behavior.Tempo;
 
-public class Creation implements Runnable, Behavior {
+public class Controller implements Runnable, Behavior {
 
 	/**
 	 * 物件所在的X座標
@@ -79,23 +79,23 @@ public class Creation implements Runnable, Behavior {
 	private boolean canRight = true;
 
 
-	public Creation() {
+	public Controller() {
 		super();
 
 	}
 
-	public Creation(Tempo tempo) {
+	public Controller(Tempo tempo) {
 		this.tempo = tempo;
 	}
 
-	public Creation(int x, int y) {
+	public Controller(int x, int y) {
 		super();
 		this.x = x;
 		this.y = y;
 	}
 	
 	
-	public Creation(int x, int y, int col, int row, Tempo tempo) {
+	public Controller(int x, int y, int col, int row, Tempo tempo) {
 		super();
 		this.x = x;
 		this.y = y;
@@ -178,7 +178,7 @@ public class Creation implements Runnable, Behavior {
 			return false;
 		if (getClass() != obj.getClass())
 			return false;
-		Creation other = (Creation) obj;
+		Controller other = (Controller) obj;
 		if (x != other.x)
 			return false;
 		if (y != other.y)
