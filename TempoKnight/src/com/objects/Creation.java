@@ -8,19 +8,19 @@ public class Creation implements Behavior {
 	/**
 	 * 物件所在的X座標
 	 */
-	protected int x;
+	public int x;
 	/**
 	 * 物件所在的Y座標
 	 */
-	protected int y;
+	public int y;
 	/**
 	 * 物件所在的列數
 	 */
-	protected int col;
+	public int col;
 	/**
 	 * 物件所在的行數
 	 */
-	protected int row;
+	public int row;
 	/**
 	 * 現在狀態
 	 */
@@ -56,7 +56,7 @@ public class Creation implements Behavior {
 	/**
 	 * 用來判斷物件是否處於某個動作指令中 若動作未完成,則無法執行其他動作
 	 */
-	protected boolean canSetStatue;
+	public boolean canSetStatue;
 	/**
 	 * 使否可向上移動
 	 */
@@ -80,12 +80,6 @@ public class Creation implements Behavior {
 
 	}
 
-	public Creation(int x, int y) {
-		super();
-		this.x = x;
-		this.y = y;
-	}
-	
 	public Creation(int x, int y, int col, int row) {
 		super();
 		this.x = x;

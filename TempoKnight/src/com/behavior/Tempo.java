@@ -14,39 +14,35 @@ public class Tempo implements Runnable {
 	private boolean actionAble = true;
 	private static Tempo tempo = null;
 	public Color color;
-	
+
 	private Tempo() {
-		
+		new Thread(this).start();
 	}
-	
+
 	/**
 	 * 設置節拍頻率,符合節拍玩家的操作才能被執行
 	 */
 	private void tempo() {
-		try {
-			time++;
-			actionAble = false;
+		time++;
+		actionAble = !actionAble;
+		if (actionAble) {
+			color = Color.RED;
+		} else {
 			color = Color.GREEN;
-			//System.out.println("temp---" + actionAble);
-			Thread.sleep(600);
-			actionAble = true;
-			color  = Color.BLACK;
-			//System.out.println("temp---" + actionAble);
-			Thread.sleep(600);
-		} catch (InterruptedException e) {
-			e.printStackTrace();
 		}
+
 	}
 
 	public static Tempo getInstance() {
 		if (tempo == null) {
 			return new Tempo();
+			
 		}
 		return tempo;
 	}
-	
-	public String getTime() {
-		return time + "";
+
+	public int getTime() {
+		return time;
 	}
 
 	public boolean isActionAble() {
@@ -61,8 +57,14 @@ public class Tempo implements Runnable {
 	public void run() {
 		while (true) {
 			tempo();
+			try {
+
+				Thread.sleep(1000);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
 		}
-		
+
 	}
-	
+
 }

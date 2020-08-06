@@ -109,7 +109,6 @@ public class MonstorController extends Controller {
 
 			m.direction = m.x > xKinght ? Creation.DIRECTION_LEFT : Creation.DIRECTION_RIGHT; // 向左或向右走
 		}
-		move(m, m.direction);
 		
 	}
 
