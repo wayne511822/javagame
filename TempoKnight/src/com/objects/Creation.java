@@ -1,5 +1,6 @@
 package com.objects;
 
+
 import com.behavior.Behavior;
 
 public class Creation implements Behavior {
@@ -23,7 +24,7 @@ public class Creation implements Behavior {
 	/**
 	 * 現在狀態
 	 */
-	protected int status = 0;
+	public int status = 0;
 	/**
 	 * 預設狀態,物件跳躍
 	 */
@@ -51,7 +52,7 @@ public class Creation implements Behavior {
 	/**
 	 * 現在的方向
 	 */
-	protected int direction = DIRECTION_DOWN;
+	public int direction = DIRECTION_DOWN;
 	/**
 	 * 用來判斷物件是否處於某個動作指令中 若動作未完成,則無法執行其他動作
 	 */

@@ -190,13 +190,6 @@ public class GamePanel extends JPanel implements Runnable {
 			 */
 			g.setColor(Color.YELLOW);
 			g.fillRect(knight.getX(), knight.getY(), PER_UNIT_SIZE, PER_UNIT_SIZE);
-			/*
-			 * 繪製敵人
-			 */
-			g.setColor(Color.RED);
-			for (Monster m : monsters) {
-				g.fillRect(m.getX(), m.getY(), PER_UNIT_SIZE, PER_UNIT_SIZE);
-			}
 
 			/*
 			 * 顯示節拍
@@ -204,6 +197,11 @@ public class GamePanel extends JPanel implements Runnable {
 			g.setColor(tempo.color);
 			g.fillOval(20, 20, PER_UNIT_SIZE, PER_UNIT_SIZE);
 
+			mc.draw(g);
+//			g.setColor(Color.RED);
+//			for (Monster m : monsters) {
+//				g.fillRect(m.getX(), m.getY(), PER_UNIT_SIZE, PER_UNIT_SIZE);
+//			}
 		}
 	}
 
@@ -372,4 +370,5 @@ public class GamePanel extends JPanel implements Runnable {
 		}
 	}
 
+	
 }

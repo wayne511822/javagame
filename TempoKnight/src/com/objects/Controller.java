@@ -3,9 +3,15 @@ package com.objects;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.swing.JComponent;
+
 import com.behavior.Tempo;
 
 public class Controller implements Runnable {
+	/**
+	 * 每格方格大小
+	 */
+	protected static final int PER_UNIT_SIZE = 65;
 	/**
 	 * 節拍器對象
 	 */
@@ -49,7 +55,7 @@ public class Controller implements Runnable {
 	/**
 	 * 依傳入指令調用相應方法
 	 */
-	protected synchronized void action() {
+	public synchronized void action() {
 		if (tempo.isActionAble()) {
 			for (Creation c : creations) {
 				switch (c.status) {
